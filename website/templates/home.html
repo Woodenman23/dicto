@@ -5,22 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dicto - Voice to Summary</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎙️ Dicto</h1>
+            <h1>Dicto</h1>
             <p><em>Your voice, summarized.</em></p>
         </header>
 
         <main>
             <div class="recording-section">
                 <button id="recordBtn" class="record-btn">
-                    <span class="record-icon">🔴</span>
                     Start Recording
                 </button>
                 <button id="stopBtn" class="stop-btn" disabled>
-                    <span class="stop-icon">⏹️</span>
                     Stop Recording
                 </button>
                 <div id="status" class="status">Ready to record</div>

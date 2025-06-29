@@ -8,25 +8,41 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #0e0d0d;
     min-height: 100vh;
     padding: 20px;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.01"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.01"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.005"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.005"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.005"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+    z-index: 0;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    background: #f5f5f5;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
     overflow: hidden;
+    position: relative;
+    z-index: 1;
 }
 
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: #2a2a2a;
+    color: rgb(255, 255, 255);
     text-align: center;
-    padding: 40px 20px;
+    padding: 50px 20px;
+    position: relative;
 }
 
 header h1 {
@@ -42,6 +58,7 @@ header p {
 
 main {
     padding: 40px;
+    background: #2f2f2f;
 }
 
 .recording-section {
@@ -51,23 +68,46 @@ main {
 
 .record-btn, .stop-btn {
     font-size: 1.1rem;
-    padding: 15px 30px;
+    padding: 18px 36px;
     border: none;
-    border-radius: 25px;
+    border-radius: 50px;
     cursor: pointer;
     margin: 10px;
-    transition: all 0.3s ease;
-    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    min-width: 160px;
 }
 
 .record-btn {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-    color: white;
+    background: linear-gradient(135deg, #00d4ff, #00b8e6);
+    color: #000000;
+    box-shadow: 0 4px 15px rgba(0,212,255,0.25);
+}
+
+.record-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.record-btn:hover:not(:disabled)::before {
+    left: 100%;
 }
 
 .record-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255,107,107,0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,212,255,0.4);
+}
+
+.record-btn:active:not(:disabled) {
+    transform: translateY(-1px);
 }
 
 .record-btn:disabled {
@@ -77,22 +117,52 @@ main {
 
 .record-btn.recording {
     animation: pulse 1.5s infinite;
+    box-shadow: 0 0 0 0 rgba(0,212,255,0.7);
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0,212,255,0.7);
+    }
+    70% { 
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(0,212,255,0);
+    }
+    100% { 
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0,212,255,0);
+    }
 }
 
 .stop-btn {
-    background: linear-gradient(135deg, #feca57, #ff9ff3);
-    color: white;
+    background: linear-gradient(135deg, #00ff88, #00cc6a);
+    color: #000000;
+    box-shadow: 0 4px 15px rgba(0,255,136,0.25);
+}
+
+.stop-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.stop-btn:hover:not(:disabled)::before {
+    left: 100%;
 }
 
 .stop-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(254,202,87,0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,255,136,0.4);
+}
+
+.stop-btn:active:not(:disabled) {
+    transform: translateY(-1px);
 }
 
 .stop-btn:disabled {
@@ -102,35 +172,134 @@ main {
 
 
 .status {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
+    margin-top: 25px;
+    padding: 18px 24px;
+    background: #2a2a2a;
+    border-radius: 15px;
     text-align: center;
     font-style: italic;
-    color: #666;
+    color: rgb(255, 255, 255);
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
 }
 
 .summary-section {
-    margin-top: 30px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 15px;
+    margin-top: 35px;
+    padding: 0;
+    background: transparent;
+    border-radius: 20px;
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .summary-section h3 {
-    color: #333;
-    margin-bottom: 15px;
-    font-weight: 500;
+    color: rgb(255, 255, 255);
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.summary-section h3::before {
+    content: "";
+    font-size: 1.2em;
 }
 
 .summary-output {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    border-left: 4px solid #667eea;
+    background: #f5f5f5;
+    padding: 30px;
+    border-radius: 16px;
+    border-left: 5px solid #00d4ff;
     line-height: 1.8;
     font-size: 1rem;
+    color: #333;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-output::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00d4ff, #00ff88, #00d4ff);
+    background-size: 200% 100%;
+    animation: gradientMove 3s ease infinite;
+}
+
+@keyframes gradientMove {
+    0%, 100% { background-position: 200% 0; }
+    50% { background-position: -200% 0; }
+}
+
+.summary-output h1, .summary-output h2, .summary-output h3 {
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+
+.summary-output h1:first-child,
+.summary-output h2:first-child,
+.summary-output h3:first-child {
+    margin-top: 0;
+}
+
+.summary-output ul, .summary-output ol {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+.summary-output li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.summary-output p {
+    margin-bottom: 15px;
+}
+
+.summary-output strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.summary-output em {
+    color: #666;
+    font-style: italic;
+}
+
+.summary-output code {
+    background: #ddd;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.9em;
+}
+
+.summary-output blockquote {
+    border-left: 3px solid #666;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background: #ddd;
+    color: #555;
+    font-style: italic;
 }
 
 @media (max-width: 480px) {

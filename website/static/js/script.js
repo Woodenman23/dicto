@@ -136,7 +136,7 @@ class AudioRecorder {
         const summarySection = document.querySelector('.summary-section');
         const summaryOutput = document.getElementById('summaryOutput');
         
-        summaryOutput.textContent = summary;
+        summaryOutput.innerHTML = marked.parse(summary);
         summarySection.style.display = 'block';
         this.status.textContent = 'Summary complete! Record again anytime.';
         
