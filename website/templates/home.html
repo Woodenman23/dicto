@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicto - Voice to Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎙️ Dicto</h1>
+            <p><em>Your voice, summarized.</em></p>
+        </header>
+
+        <main>
+            <div class="recording-section">
+                <button id="recordBtn" class="record-btn">
+                    <span class="record-icon">🔴</span>
+                    Start Recording
+                </button>
+                <button id="stopBtn" class="stop-btn" disabled>
+                    <span class="stop-icon">⏹️</span>
+                    Stop Recording
+                </button>
+                <div id="status" class="status">Ready to record</div>
+            </div>
+
+
+            <div class="summary-section" style="display: none;">
+                <h3>Summary</h3>
+                <div id="summaryOutput" class="summary-output"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
