@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: woodenman23/dicto
+  IMAGE_NAME: dicto
 
 jobs:
   build-and-deploy-staging:
@@ -36,7 +36,6 @@ jobs:
             type=ref,event=branch
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=staging
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -54,7 +53,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             # Pull the latest image
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:staging
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
             # Stop and remove existing staging container
             docker stop dicto-app-staging || true
@@ -67,7 +66,7 @@ jobs:
               -p 6003:8080 \
               -e BASE_PATH=/dicto-staging \
               -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:staging
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Staging deployment complete
         run: |
@@ -81,10 +80,12 @@ jobs:
     environment: production
     runs-on: ubuntu-latest
     steps:
-      - name: Production approval received
+      - name: Review staging before approving
         run: |
-          echo "✅ Production deployment approved!"
-          echo "🚀 Promoting to production..."
+          echo "🔍 REVIEW STAGING FIRST:"
+          echo "📍 Test your app at: https://josephfoster.me/dicto-staging"
+          echo "✅ If staging looks good, this job will continue to production"
+          echo "❌ If staging has issues, reject this deployment"
 
   promote-to-production:
     needs: await-approval
@@ -99,7 +100,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             # Tag current production as backup (if exists)
-            docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:staging ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:backup || true
+            docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:backup || true
 
             # Stop and remove existing production container
             docker stop dicto || true
@@ -116,10 +117,10 @@ jobs:
               -p 5003:8080 \
               -e BASE_PATH=/dicto \
               -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:staging
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
             # Clean up old images (keep backup)
-            docker image prune -f
+            docker image prune -a
 
       - name: Production deployment complete
         run: |
