@@ -74,16 +74,13 @@ jobs:
           echo "⏳ Waiting for production approval..."
 
   await-approval:
+    name: "🔍 Test https://josephfoster.me/dicto-staging then approve"
     needs: build-and-deploy-staging
     environment: production
     runs-on: ubuntu-latest
     steps:
-      - name: Review staging before approving
-        run: |
-          echo "🔍 REVIEW STAGING FIRST:"
-          echo "📍 Test version running at: https://josephfoster.me/dicto-staging"
-          echo "✅ If staging looks good, this job will continue to production"
-          echo "❌ If staging has issues, reject this deployment"
+      - name: Production approved
+        run: echo "✅ Production deployment approved!"
 
   promote-to-production:
     needs: await-approval
