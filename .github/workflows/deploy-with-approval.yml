@@ -71,8 +71,6 @@ jobs:
       - name: Staging deployment complete
         run: |
           echo "🚀 Staging deployment complete!"
-          echo "📍 Test your app at: https://josephfoster.me/dicto-staging"
-          echo "🔍 Approve deployment at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           echo "⏳ Waiting for production approval..."
 
   await-approval:
@@ -83,7 +81,7 @@ jobs:
       - name: Review staging before approving
         run: |
           echo "🔍 REVIEW STAGING FIRST:"
-          echo "📍 Test your app at: https://josephfoster.me/dicto-staging"
+          echo "📍 Test version running at: https://josephfoster.me/dicto-staging"
           echo "✅ If staging looks good, this job will continue to production"
           echo "❌ If staging has issues, reject this deployment"
 
