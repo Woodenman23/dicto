@@ -20,6 +20,14 @@ def create_app() -> Flask:
     # Enable CORS for frontend communication
     CORS(app)
     
+    # Set base path for deployment context
+    base_path = os.environ.get('BASE_PATH', '')
+    app.config['BASE_PATH'] = base_path
+    
+    @app.context_processor
+    def inject_base_path():
+        return dict(base_path=app.config['BASE_PATH'])
+    
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size

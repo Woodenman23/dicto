@@ -114,7 +114,8 @@ class AudioRecorder {
         formData.append('audio', this.recordedBlob, 'recording.webm');
         
         try {
-            const response = await fetch('/api/process-audio', {
+            const basePath = window.BASE_PATH || '';
+            const response = await fetch(`${basePath}/api/process-audio`, {
                 method: 'POST',
                 body: formData
             });
