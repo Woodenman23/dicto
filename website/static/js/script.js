@@ -4,10 +4,12 @@ class AudioRecorder {
         this.audioChunks = [];
         this.stream = null;
         this.isRecording = false;
+        this.plainTextForCopy = '';
         
         this.recordBtn = document.getElementById('recordBtn');
         this.stopBtn = document.getElementById('stopBtn');
         this.status = document.getElementById('status');
+        this.copyBtn = document.getElementById('copyBtn');
         
         this.init();
     }
@@ -15,6 +17,7 @@ class AudioRecorder {
     init() {
         this.recordBtn.addEventListener('click', () => this.startRecording());
         this.stopBtn.addEventListener('click', () => this.stopRecording());
+        this.copyBtn.addEventListener('click', () => this.copyToClipboard());
     }
     
     async startRecording() {
@@ -122,7 +125,7 @@ class AudioRecorder {
             
             if (response.ok) {
                 const result = await response.json();
-                this.displaySummary(result.summary);
+                this.displaySummary(result.summary, result.plain_text);
             } else {
                 throw new Error('Server error');
             }
@@ -133,16 +136,43 @@ class AudioRecorder {
         }
     }
     
-    displaySummary(summary) {
+    displaySummary(summary, plainText) {
         const summarySection = document.querySelector('.summary-section');
         const summaryOutput = document.getElementById('summaryOutput');
         
         summaryOutput.innerHTML = marked.parse(summary);
+        this.plainTextForCopy = plainText;
         summarySection.style.display = 'block';
         this.status.textContent = 'Summary complete! Record again anytime.';
         
         // Reset for new recording
         this.updateUI('ready');
+    }
+    
+    async copyToClipboard() {
+        if (!this.plainTextForCopy.trim()) {
+            this.status.textContent = 'No summary to copy';
+            return;
+        }
+        
+        try {
+            await navigator.clipboard.writeText(this.plainTextForCopy);
+            
+            // Visual feedback
+            const textSpan = this.copyBtn.querySelector('span');
+            const originalText = textSpan.textContent;
+            textSpan.textContent = 'Copied!';
+            this.copyBtn.classList.add('copied');
+            
+            setTimeout(() => {
+                textSpan.textContent = originalText;
+                this.copyBtn.classList.remove('copied');
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Failed to copy to clipboard:', error);
+            this.status.textContent = 'Failed to copy to clipboard';
+        }
     }
 }
 
