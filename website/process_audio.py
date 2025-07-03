@@ -4,17 +4,25 @@ import re
 
 from flask import jsonify, current_app
 from openai import OpenAI
+from pydub import AudioSegment
+from pydub.effects import speedup
+
 
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
-def transcribe(audio_file):
+def speed_up_audio(audio_file):
+    audio = AudioSegment.from_file(audio_file, format="webm")
+    sped_up_audio = speedup(audio, playback_speed=1.5)
+
     with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as temp_file:
-        audio_file.save(temp_file.name)
+        sped_up_audio.export(temp_file.name, format="webm")
         temp_path = temp_file.name
-    
+    return temp_path
+
+def transcribe(audio_file_path):
     try:
         current_app.logger.info("Starting transcription...")
-        with open(temp_path, 'rb') as audio:
+        with open(audio_file_path, 'rb') as audio:
             transcript_response = client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio,
@@ -27,12 +35,11 @@ def transcribe(audio_file):
         if not transcript:
             return jsonify({'error': 'No speech detected in audio'}), 400
         
-        
-    finally:
-        if os.path.exists(temp_path):
-            os.unlink(temp_path)
-
         return transcript
+    
+    except Exception as e:
+        current_app.logger.error(f"Error during transcription: {str(e)}")
+        raise
 
 def markdown_to_plain_text(markdown_text):
     """Convert markdown to plain text suitable for email/notepad"""
