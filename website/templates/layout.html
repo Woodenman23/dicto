@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    
+    <link rel="stylesheet" href="{{ base_path }}/static/css/style.css">
+
+    <title>{% block title %} Dicto {% endblock %}</title>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-brand">
+          <a href="{{ url_for('views.home') }}">
+            <img src="/static/images/scribe.jpg" alt="Dicto" class="nav-logo" />
+            <span class="nav-title">Dicto</span>
+          </a>
+        </div>
+        
+        <div class="nav-menu" id="nav-menu">
+          <a href="/" class="nav-link">Home</a>
+          <a href="/" class="nav-link">Demo</a>
+          <a href="https://www.josephfoster.me" target="_blank" class="nav-link">Portfolio</a>
+        </div>
+        
+        <div class="nav-toggle" id="nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+    
+    <br />
+    <!-- {% with messages = get_flashed_messages(with_categories=true) %} 
+    {% if messages %} 
+    {% for catagory, message in messages %} 
+    {% if catagory =="error" %}
+    <div class="alert alert-danger alter-dismissable fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span area-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alter-dismissable fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span area-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endif %} 
+    {% endfor %} 
+    {% endif %} 
+    {% endwith %}
+     -->
+    {% block content %}
+    {% endblock %}
+    
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-content">
+          <div class="footer-text">
+            <p>&copy; 2025 Dicto - Voice to Summary</p>
+          </div>
+          <div class="social-links">
+            <a href="https://github.com/Woodenman23/dicto" target="_blank" class="social-link">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/joseph-roger-foster/" target="_blank" class="social-link">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer> 
+
+    <script>
+      // Mobile menu toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        
+        if (navToggle && navMenu) {
+          navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            navToggle.classList.toggle('active');
+          });
+        }
+      });
+    </script>
+
+
+  </body>
+
+
+</html>

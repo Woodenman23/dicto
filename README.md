@@ -1,4 +1,4 @@
-# 🎙️ Dicto - Voice to Summary
+# 🎙️ Dicto - Your Voice Summarised.
 
 A minimal web application that records audio in the browser, transcribes it using OpenAI's Whisper API, and generates summaries using GPT.
 
@@ -76,7 +76,8 @@ dicto/
 │   ├── __init__.py               # App factory with CORS setup
 │   ├── views.py                  # Routes: home page + API endpoint
 │   ├── templates/
-│   │   └── home.html            # Main page template
+│   │   ├── home.html            # Main page template
+|   |   └── layout.html          # Template for common elements across all pages
 │   └── static/
 │       ├── css/
 │       │   └── style.css        # Application styling

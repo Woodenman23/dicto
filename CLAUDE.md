@@ -135,3 +135,13 @@ dicto/
 ## 💰 Current API Costs
 - **Whisper API**: ~$0.006 per minute of audio
 - **GPT-4o-mini**: ~$0.0001 per summary (very cheap)
+
+---
+
+## 💭 Design Considerations
+
+### Frontend Framework Thoughts
+- Considering moving away from Bootstrap for more flexibility
+- Interested in using pure JavaScript and CSS for custom design
+- Want to avoid framework complexities that overwrite custom JavaScript
+- Exploring the viability of using Flask without Bootstrap for more control
