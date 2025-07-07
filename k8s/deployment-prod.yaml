@@ -1,0 +1,30 @@
+# manifest for kubernetes deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dicto-app
+  labels:
+    app: dicto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dicto
+  template:
+    metadata:
+      labels:
+        app: dicto
+    spec:
+      containers:
+        - name: dicto
+          image: dicto:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dicto-secrets
+                  key: openai-api-key
