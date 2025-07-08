@@ -1,5 +1,6 @@
 import logging
 import os
+import secrets
 from typing import Dict, Any
 from flask import Flask
 from flask_cors import CORS
@@ -18,8 +19,9 @@ logger = logging.getLogger(__name__)
 def create_app() -> Flask:
     app = Flask(__name__)
     
-    # Enable CORS for frontend communication
-    CORS(app)
+    # Enable CORS for frontend communication - restrict to specific origins
+    allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5005,http://127.0.0.1:5005').split(',')
+    CORS(app, origins=allowed_origins)
     
     # Set base path for deployment context
     base_path = os.environ.get('BASE_PATH', '')
@@ -30,7 +32,7 @@ def create_app() -> Flask:
         return dict(base_path=app.config['BASE_PATH'])
     
     # Configuration
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') or secrets.token_hex(32)
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
     
     # Register blueprints
