@@ -116,6 +116,60 @@ dicto/
 - Batch processing
 - Export options (PDF, markdown)
 
+## 🚀 Kubernetes Deployment (In Development)
+
+> **⚠️ Development Feature**: The Kubernetes deployment is currently in development and intended for local testing with minikube.
+
+### Prerequisites
+- Docker
+- minikube
+- kubectl
+
+### Quick Deploy to Local Kubernetes
+```bash
+# Start minikube
+minikube start
+
+# Deploy using the provided script
+./deploy_k8s.sh
+```
+
+The deployment script will:
+1. Build the Docker image locally
+2. Apply Kubernetes secrets (API keys)
+3. Deploy the application to your local cluster
+4. Expose the service and start port-forwarding to `http://localhost:9000`
+
+### Manual Kubernetes Deployment
+```bash
+# Build and load image into minikube
+eval $(minikube docker-env)
+docker build -t dicto:latest .
+
+# Apply Kubernetes manifests
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/deployment-local.yaml
+kubectl apply -f k8s/service.yaml
+
+# Port forward to access the app
+kubectl port-forward service/dicto-service 9000:80
+```
+
+### Configuration Files
+- `k8s/deployment-local.yaml` - Local development deployment
+- `k8s/deployment-prod.yaml` - Production deployment template
+- `k8s/service.yaml` - Service definition
+- `k8s/secret.yaml` - Secrets for API keys (create from `secret.example.yaml`)
+
+### Setting Up Secrets
+```bash
+# Copy the example secret file
+cp k8s/secret.example.yaml k8s/secret.yaml
+
+# Edit the secret file and add your base64-encoded OpenAI API key
+# To encode: echo -n "your-api-key" | base64
+```
+
 ## 📝 Development
 
 Built following Flask best practices:
