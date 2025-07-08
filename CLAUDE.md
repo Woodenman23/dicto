@@ -145,3 +145,9 @@ dicto/
 - Interested in using pure JavaScript and CSS for custom design
 - Want to avoid framework complexities that overwrite custom JavaScript
 - Exploring the viability of using Flask without Bootstrap for more control
+
+### Python Code Standards
+- **Type Hints**: Always include type hints for all Python function parameters and return types
+- Use `typing` module imports for complex types (Dict, List, Optional, etc.)
+- Import specific types from libraries when needed (e.g., `FileStorage` from `werkzeug.datastructures`)
+- Type hints improve code clarity, IDE support, and maintainability

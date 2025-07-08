@@ -1,17 +1,19 @@
 import os
 import tempfile
 import re
+from typing import Dict, Any
 
-from flask import jsonify, current_app
+from flask import jsonify, current_app, Response
 from openai import OpenAI
 from pydub import AudioSegment
 from pydub.effects import speedup
+from werkzeug.datastructures import FileStorage
 
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-def speed_up_audio(audio_file):
+def speed_up_audio(audio_file: FileStorage) -> str:
     audio = AudioSegment.from_file(audio_file, format="webm")
     sped_up_audio = speedup(audio, playback_speed=1.5)
 
@@ -21,7 +23,7 @@ def speed_up_audio(audio_file):
     return temp_path
 
 
-def transcribe(audio_file_path):
+def transcribe(audio_file_path: str) -> str:
     try:
         current_app.logger.info("Starting transcription...")
         with open(audio_file_path, "rb") as audio:
@@ -42,7 +44,7 @@ def transcribe(audio_file_path):
         raise
 
 
-def markdown_to_plain_text(markdown_text):
+def markdown_to_plain_text(markdown_text: str) -> str:
     """Convert markdown to plain text suitable for email/notepad"""
     text = markdown_text
 
@@ -79,7 +81,7 @@ def markdown_to_plain_text(markdown_text):
     return text
 
 
-def process_with_LLM(transcript: str):
+def process_with_LLM(transcript: str) -> Response:
     current_app.logger.info("Starting summarization...")
     summary_response = client.chat.completions.create(
         model="gpt-4o-mini",

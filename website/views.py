@@ -1,6 +1,6 @@
 import os
 import tempfile
-from flask import Blueprint, request, jsonify, current_app, render_template
+from flask import Blueprint, request, jsonify, current_app, render_template, Response
 
 from .process_audio import transcribe, process_with_LLM, speed_up_audio
 
@@ -8,13 +8,13 @@ views = Blueprint("views", __name__)
 
 
 @views.route("/")
-def home():
+def home() -> str:
     """Serve the main page"""
     return render_template("home.html")
 
 
 @views.route("/api/process-audio", methods=["POST"])
-def process_audio():
+def process_audio() -> Response:
     try:
         if "audio" not in request.files:
             return jsonify({"error": "No audio file provided"}), 400

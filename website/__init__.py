@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Dict, Any
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ def create_app() -> Flask:
     app.config['BASE_PATH'] = base_path
     
     @app.context_processor
-    def inject_base_path():
+    def inject_base_path() -> Dict[str, Any]:
         return dict(base_path=app.config['BASE_PATH'])
     
     # Configuration
