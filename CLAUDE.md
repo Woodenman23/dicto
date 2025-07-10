@@ -113,6 +113,46 @@ Users generate early drafts for emails, blogs, or scripts through voice and get 
 
 ---
 
+## 📋 TODO - NEXT IMMEDIATE TASK
+
+### Database Integration: SQLite + SQLAlchemy
+**Recommended approach for adding data persistence to Dicto**
+
+#### Implementation Steps:
+1. **Add Dependencies**
+   - Add `flask-sqlalchemy` and `flask-migrate` to pyproject.toml
+
+2. **Database Models**
+   - Create `website/models.py` with AudioSummary model (id, transcript, summary, timestamp, metadata)
+   - Optional: UserSession model for browser session tracking
+
+3. **Flask Configuration**
+   - Configure SQLAlchemy in `website/__init__.py`
+   - Set up database initialization and migrations
+
+4. **Update Views**
+   - Modify `/api/process-audio` to save transcripts/summaries to database
+   - Add new API endpoints for retrieving history (`/api/summaries`)
+
+5. **Database Schema**
+   - Create migration files with `flask db init/migrate/upgrade`
+   - Initialize database
+
+6. **Frontend Integration**
+   - Add history display section to `templates/home.html`
+   - Update `static/js/script.js` to fetch and display saved summaries
+
+#### Why SQLite + SQLAlchemy:
+- ✅ Zero configuration - single file database
+- ✅ Perfect for current simple Flask architecture  
+- ✅ Easy to migrate to PostgreSQL later
+- ✅ Enables session history and export features
+- ✅ Foundation for future user accounts
+
+This provides immediate value (session history) while setting foundation for Note Storage & Export features.
+
+---
+
 ## 📁 Current Project Structure
 
 ```
