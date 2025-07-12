@@ -3,6 +3,14 @@ name: Deploy with Approval
 on:
   push:
     branches: [main]
+    paths:
+      - 'website/**'
+      - 'app.py'
+      - 'Dockerfile'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+      - 'requirements.txt'
+      - 'k8s/**'
   workflow_dispatch:
 
 env:
