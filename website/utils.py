@@ -31,11 +31,11 @@ def markdown_to_plain_text(markdown_text: str) -> str:
     # Convert bullet points to proper bullets
     text = re.sub(r"^[-*+] (.+)$", r"• \1", text, flags=re.MULTILINE)
 
-    # Convert numbered lists to bullets
-    text = re.sub(r"^\d+\. (.+)$", r"• \1", text, flags=re.MULTILINE)
+    # Keep numbered lists as numbers (don't convert to bullets for plain text)
+    # This preserves the ordering which is important when copying text
 
-    # Handle links - keep the text, remove the URL
-    text = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", text)
+    # Handle links - keep both text and URL for copying
+    text = re.sub(r"\[(.+?)\]\((.+?)\)", r"\1 (\2)", text)
 
     # Remove inline code formatting
     text = re.sub(r"`(.+?)`", r"\1", text)
@@ -75,8 +75,8 @@ def markdown_to_pdf_text(markdown_text: str) -> str:
     # Convert bullet points to proper bullets
     text = re.sub(r"^[-*+] (.+)$", r"• \1", text, flags=re.MULTILINE)
 
-    # Convert numbered lists to bullets
-    text = re.sub(r"^\d+\. (.+)$", r"• \1", text, flags=re.MULTILINE)
+    # Keep numbered lists as numbers (preserve ordering in PDFs too)
+    # This maintains the sequence which is important for step-by-step content
 
     # Handle links - keep the text, remove the URL
     text = re.sub(r"\[(.+?)\]\(.+?\)", r"\1", text)
