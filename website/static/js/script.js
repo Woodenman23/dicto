@@ -5,11 +5,14 @@ class AudioRecorder {
         this.stream = null;
         this.isRecording = false;
         this.plainTextForCopy = '';
+        this.currentTranscript = '';
+        this.currentSummary = '';
 
         this.recordBtn = document.getElementById('recordBtn');
         this.stopBtn = document.getElementById('stopBtn');
         this.status = document.getElementById('status');
         this.copyBtn = document.getElementById('copyBtn');
+        this.exportPdfBtn = document.getElementById('exportPdfBtn');
 
         this.init();
     }
@@ -18,6 +21,7 @@ class AudioRecorder {
         this.recordBtn.addEventListener('click', () => this.startRecording());
         this.stopBtn.addEventListener('click', () => this.stopRecording());
         this.copyBtn.addEventListener('click', () => this.copyToClipboard());
+        this.exportPdfBtn.addEventListener('click', () => this.exportToPdf());
     }
 
     async startRecording() {
@@ -125,7 +129,7 @@ class AudioRecorder {
 
             if (response.ok) {
                 const result = await response.json();
-                this.displaySummary(result.summary, result.plain_text);
+                this.displaySummary(result.summary, result.plain_text, result.transcript);
             } else {
                 const errorText = await response.text();
                 console.error('Server error response:', errorText);
@@ -138,14 +142,18 @@ class AudioRecorder {
         }
     }
 
-    displaySummary(summary, plainText) {
+    displaySummary(summary, plainText, transcript = '') {
         const summarySection = document.querySelector('.summary-section');
         const summaryOutput = document.getElementById('summaryOutput');
 
         // Use marked.js to parse the markdown summary for nice HTML formatting  
         summaryOutput.innerHTML = marked.parse(summary);
         this.plainTextForCopy = plainText;
+        this.currentTranscript = transcript;
+        this.currentSummary = summary;
+        
         summarySection.style.display = 'block';
+        this.exportPdfBtn.style.display = 'inline-block';
         this.status.textContent = 'Summary complete! Record again anytime.';
 
         // Reset for new recording
@@ -175,6 +183,63 @@ class AudioRecorder {
         } catch (error) {
             console.error('Failed to copy to clipboard:', error);
             this.status.textContent = 'Failed to copy to clipboard';
+        }
+    }
+
+    async exportToPdf() {
+        if (!this.currentSummary.trim()) {
+            this.status.textContent = 'No summary to export';
+            return;
+        }
+
+        try {
+            const exportData = {
+                transcript: this.currentTranscript,
+                summary: this.currentSummary
+            };
+
+            const basePath = window.BASE_PATH || '';
+            const response = await fetch(`${basePath}/api/export-pdf`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(exportData)
+            });
+
+            if (response.ok) {
+                // Create a blob from the response
+                const blob = await response.blob();
+                
+                // Get the filename from the response headers
+                const contentDisposition = response.headers.get('content-disposition');
+                let filename = 'dicto-summary.pdf';
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename=([^;]+)/);
+                    if (filenameMatch) {
+                        filename = filenameMatch[1];
+                    }
+                }
+
+                // Create download link and trigger download
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                this.status.textContent = 'PDF downloaded successfully!';
+            } else {
+                throw new Error(`Server error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error exporting PDF:', error);
+            this.status.textContent = 'Error: Could not export PDF. Please try again.';
         }
     }
 }

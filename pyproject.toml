@@ -13,6 +13,7 @@ openai = "^1.0.0"
 python-dotenv = "^1.0.1"
 pydub = "^0.25.1"
 gunicorn = "^21.0.0"
+reportlab = "^4.4.2"
 
 [build-system]
 requires = ["poetry-core"]
