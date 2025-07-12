@@ -192,6 +192,13 @@ class AudioRecorder {
             return;
         }
 
+        // Disable button and show loading state
+        const exportBtn = this.exportPdfBtn;
+        const originalText = exportBtn.textContent;
+        exportBtn.disabled = true;
+        exportBtn.textContent = 'Generating PDF...';
+        this.status.textContent = 'Generating PDF...';
+
         try {
             const exportData = {
                 transcript: this.currentTranscript,
@@ -211,36 +218,51 @@ class AudioRecorder {
                 // Create a blob from the response
                 const blob = await response.blob();
                 
-                // Get the filename from the response headers
-                const contentDisposition = response.headers.get('content-disposition');
-                let filename = 'dicto-summary.pdf';
-                if (contentDisposition) {
-                    const filenameMatch = contentDisposition.match(/filename=([^;]+)/);
-                    if (filenameMatch) {
-                        filename = filenameMatch[1];
-                    }
-                }
-
-                // Create download link and trigger download
+                // Create blob URL for PDF
                 const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
                 
-                // Cleanup
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                this.status.textContent = 'PDF downloaded successfully!';
+                // Try to open PDF in new tab
+                const newTab = window.open(url, '_blank');
+                
+                if (newTab) {
+                    // Success - PDF opened in new tab
+                    this.status.textContent = 'PDF opened in new tab!';
+                    
+                    // Clean up blob URL after some time to prevent memory leaks
+                    setTimeout(() => {
+                        window.URL.revokeObjectURL(url);
+                    }, 60000); // 1 minute
+                } else {
+                    // Popup blocked - fallback to download
+                    this.fallbackDownload(blob, url);
+                    this.status.textContent = 'Popup blocked. PDF downloaded instead.';
+                }
             } else {
                 throw new Error(`Server error: ${response.status}`);
             }
         } catch (error) {
             console.error('Error exporting PDF:', error);
             this.status.textContent = 'Error: Could not export PDF. Please try again.';
+        } finally {
+            // Re-enable button and restore text
+            exportBtn.disabled = false;
+            exportBtn.textContent = originalText;
         }
+    }
+
+    fallbackDownload(blob, url) {
+        // Fallback download when popup is blocked
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'dicto-summary.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        // Clean up blob URL
+        setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+        }, 1000);
     }
 }
 
