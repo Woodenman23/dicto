@@ -4,20 +4,28 @@ import secrets
 from typing import Dict, Any
 from flask import Flask
 from flask_cors import CORS
+from prometheus_flask_exporter import PrometheusMetrics
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-# Setup logging
+# Setup logging with environment variable support
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, log_level),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
 def create_app() -> Flask:
     app = Flask(__name__)
+    
+    # Initialize Prometheus metrics (automatically adds /metrics endpoint)
+    metrics = PrometheusMetrics(app)
+    
+    # Add custom metrics
+    metrics.info('app_info', 'Application info', version='1.0')
     
     # Enable CORS for frontend communication - restrict to specific origins
     allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5005,http://127.0.0.1:5005').split(',')

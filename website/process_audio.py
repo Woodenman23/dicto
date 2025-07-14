@@ -1,6 +1,8 @@
 import os
 import tempfile
-
+import time
+from functools import wraps
+from typing import Callable, Any
 
 from flask import jsonify, current_app, Response
 from openai import OpenAI
@@ -10,6 +12,25 @@ from werkzeug.datastructures import FileStorage
 
 
 from website.utils import markdown_to_plain_text
+
+
+def track_processing_time(metric_name: str) -> Callable:
+    """Decorator to track processing time for audio operations"""
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            start_time = time.time()
+            try:
+                result = func(*args, **kwargs)
+                duration = time.time() - start_time
+                current_app.logger.info(f"{metric_name} completed in {duration:.2f}s")
+                return result
+            except Exception as e:
+                duration = time.time() - start_time
+                current_app.logger.error(f"{metric_name} failed after {duration:.2f}s: {str(e)}")
+                raise
+        return wrapper
+    return decorator
 
 
 api_key = os.getenv("OPENAI_API_KEY")
@@ -28,6 +49,7 @@ def speed_up_audio(audio_file: FileStorage) -> str:
     return temp_path
 
 
+@track_processing_time("transcription")
 def transcribe(audio_file_path: str) -> str:
     try:
         current_app.logger.info("Starting transcription...")
@@ -49,6 +71,7 @@ def transcribe(audio_file_path: str) -> str:
         raise
 
 
+@track_processing_time("summarization")
 def process_with_LLM(transcript: str) -> Response:
     current_app.logger.info("Starting summarization...")
     summary_response = client.chat.completions.create(
